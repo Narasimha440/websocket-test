@@ -3,7 +3,7 @@ import asyncio
 import websockets
 import json
 
-PORT = 8765  # Use a static port for now
+PORT = int(os.environ.get("PORT", 8765))  # Use the port assigned by Railway or fallback to 8765
 rooms = {}  # Dictionary to store rooms and connected clients
 
 async def handler(websocket, path):
@@ -41,8 +41,9 @@ async def broadcast(room, message):
                 clients.remove(client)
 
 async def start_server():
-    async with websockets.serve(handler, "localhost", PORT):  # ✅ FIX: Use localhost
-        print(f"WebSocket server running on ws://localhost:{PORT}")
+    # ✅ Change localhost to 0.0.0.0
+    async with websockets.serve(handler, "0.0.0.0", PORT):  # Allow external access
+        print(f"WebSocket server running on ws://0.0.0.0:{PORT}")
         await asyncio.Future()  # Keep running forever
 
 if __name__ == "__main__":
